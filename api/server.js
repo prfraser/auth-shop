@@ -15,7 +15,8 @@ app.use(initialize);
 // Routes
 app.use([
 	require('./routes/products'),
-	require('./routes/auth')
+	require('./routes/auth'),
+	require('./routes/stores')
 ])
 
 app.use((error, req, res, next) => {
