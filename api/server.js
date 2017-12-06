@@ -4,15 +4,18 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const { initialize } = require('./middleware/auth');
 
 const app = express();
 
 // Plugins / middleware
 app.use(bodyParser.json());
+app.use(initialize);
 
 // Routes
 app.use([
-	require('./routes/products')
+	require('./routes/products'),
+	require('./routes/auth')
 ])
 
 app.use((error, req, res, next) => {
