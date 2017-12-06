@@ -10,6 +10,11 @@ const app = express();
 // Plugins / middleware
 app.use(bodyParser.json());
 
+// Routes
+app.use([
+	require('./routes/products')
+])
+
 app.use((error, req, res, next) => {
 	// JSON error handling
 	res.send({ error: error.message })
@@ -20,7 +25,7 @@ app.use((req, res, next) => {
 	res.status(404).send({ error: `No route found for ${req.method} ${req.url}` });
 });
 
-// Routes
+// Turn on server
 app.listen(7000, (error) => {
 	if (error) {
 		console.log('There was a problem starting the server.', error)
