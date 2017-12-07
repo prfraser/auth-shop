@@ -58,8 +58,7 @@ const signJWTForUser = (req, res) => {
 	// Create a signed token
 	const token = JWT.sign({
 		email: user.email
-	},
-	jwtSecret,
+	}, jwtSecret,
 	{
 		subject: user._id.toString(),
 		algorithm: jwtAlgorithm,
@@ -70,10 +69,19 @@ const signJWTForUser = (req, res) => {
 	res.send({token: token})
 }
 
+const verifyAdmin = (req, res, next) => {
+	if (req.user.role && req.user.role === 'admin') {
+		next()
+	} else {
+		res.status(401).send({ error: "You have no business here." })
+	}
+}
+
 module.exports = {
 	initialize: passport.initialize(),
 	register: register,
 	signIn: passport.authenticate('local', { session: false }),
 	requireJWT: passport.authenticate('jwt', { session: false }),
-	signJWTForUser: signJWTForUser
+	signJWTForUser: signJWTForUser,
+	verifyAdmin: verifyAdmin
 }
