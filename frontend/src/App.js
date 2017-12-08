@@ -1,26 +1,45 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import LoginForm from './components/LoginForm';
+import Products from './components/Products';
 import RegisterForm from './components/RegisterForm';
+import { setJwt } from './api/init';
 import { Button } from 'reactbulma';
 import './App.css';
 
 class App extends Component {
   state = {
-    loggedIn: false
+    loggedIn: null,
+    register: false
+  }
+
+  toggleRegister = () => {
+    this.setState({
+      register: !this.state.register
+    })
+  }
+
+  handleLoginResponse = (response) => {
+    this.setState({
+      loggedIn: response.data.token
+    })
   }
 
   render() {
 
     let loggedInState = null
-    if (!this.state.loggedIn) {
+    if (!this.state.loggedIn && !this.state.register) {
       loggedInState = <div>
-                        <LoginForm />
-                        <Button>Register</Button>
+                        <LoginForm handleLoginResponse={this.handleLoginResponse} />
+                        <Button onClick={this.toggleRegister}>Register</Button>
+                      </div>
+    } else if (this.state.register) {
+      loggedInState = <div>
+                        <RegisterForm />
+                        <Button onClick={this.toggleRegister}>Log In</Button>
                       </div>
     } else {
       loggedInState = <div>
-                        <p>All Products</p>
+                        <Products token={this.state.loggedIn}/>
                       </div>
     }
 
@@ -32,7 +51,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // axios.get()
+    let token = localStorage.getItem('token')
+    token && setJwt(token) 
+    this.setState({
+      loggedIn: token
+    })
   }
 }
 

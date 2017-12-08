@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== 'production') {
 	require('dotenv').config()
 }
 
+const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { initialize, requireJWT, verifyAdmin } = require('./middleware/auth');
@@ -9,6 +10,7 @@ const { initialize, requireJWT, verifyAdmin } = require('./middleware/auth');
 const app = express();
 
 // Plugins / middleware
+app.use(cors());
 app.use(bodyParser.json());
 app.use(initialize);
 

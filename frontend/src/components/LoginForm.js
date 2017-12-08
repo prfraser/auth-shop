@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { api, setJwt } from '../api/init';
 import { Control, Title, Level, Button, Input} from 'reactbulma';
 import '../App.css';
 
 class LoginForm extends Component {
-  state = {
-    emailValue: '',
-    passwordValue: ''
+  constructor(props){
+    super(props)
+    this.state = {
+      emailValue: '',
+      passwordValue: ''
+    }
   }
 
   handleLoginChange = (event) => {
@@ -17,16 +20,13 @@ class LoginForm extends Component {
 
   handleLoginSubmit = (event) => {
     event.preventDefault();
-    const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'JWT fefege...' 
-        }
-    axios.post('/auth', {
-      email: this.state.emailValue,
-      password: this.state.passwordValue
-    })
+      api.post('/auth', {
+        email: this.state.emailValue,
+        password: this.state.passwordValue
+      })
       .then((response) => {
-
+        setJwt(response.data.token)
+        this.props.handleLoginResponse(response)
       })
       .catch((error) => {
         console.log('An error occured when trying to login.', error)

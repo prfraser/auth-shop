@@ -1,14 +1,17 @@
 const request = require('supertest');
 const app = require('../server.js');
 const User = require('../models/User');
+const Product = require('../models/Product');
 const chai = require('chai');
 
 const should = chai.should()
 
 const testEmail = 'john@doe.com'
 let token
+let adminToken
+let currentProduct
 describe('Test routes', () => {
-
+//Auth Routes
 	it('should return 404 for an invalid URL', (done) => {
 		request(app)
 			.get('/bad-url')
@@ -41,6 +44,20 @@ describe('Test routes', () => {
 			})
 	});
 
+	it('should log a user in', (done) => {
+		request(app)
+			.post('/auth')
+			.send({ 
+				email: 'admin@admin.com', 
+				password: 'password'
+			})
+			.expect(200)
+			.then((response) => {
+				adminToken = response.body.token
+				done()
+			})
+	});
+
 	it('should require correct credentials', (done) => {
 		request(app)
 			.post('/auth')
@@ -69,12 +86,79 @@ describe('Test routes', () => {
 			})
 	});
 
+// Admin Test
 	it('should only let an admin through to /admin', (done) => {
 		request(app)
 			.get('/admin')
 			.expect(401, done)
 	});
-	
+
+// Product Create, Update and Delete
+	it('should require a token to create a product', (done) => {
+		request(app)
+			.post('/products')
+			.expect(401, done)
+	});
+
+	it('should create a product with a valid token', (done) => {
+		request(app)
+			.post('/products')
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send({ 
+				brandName: 'Wild Rhino', 
+				name: 'Sweet boots'
+			})
+			.expect(200)
+			.then((response) => {
+				// Make sure the response is the array!
+				response.body.should.be.an('object')
+				currentProduct = response.body
+				done()
+			});
+	});
+
+	it('should require a token to update a product', (done) => {
+		request(app)
+			.patch('/products')
+			.expect(401, done)
+	});
+
+	it('should create a product with a valid token', (done) => {
+		request(app)
+			.patch('/products')
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send({ 
+				_id: currentProduct._id,
+				brandName: 'Wild Rhino00', 
+				name: 'Sweet boots'
+			})
+			.expect(200)
+			.then((response) => {
+				// Make sure the response is the array!
+				response.body.should.be.an('object')
+				console.log(response.body)
+				done()
+			});
+	});
+
+	it('should require a token to delete a product', (done) => {
+		request(app)
+			.delete(`/products/${currentProduct._id}`)
+			.expect(401, done)
+	});
+
+	it('should require a token to delete a product', (done) => {
+		request(app)
+			.delete(`/products/${currentProduct._id}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200)
+			.then((response) => {
+				// Make sure the response is the array!
+				response.body.should.be.an('object')
+				done()
+			});
+	});
+
 	after(() => {
 		User.remove({ email: testEmail }).then(() => {
 			console.log('Cleaned up the DB!')

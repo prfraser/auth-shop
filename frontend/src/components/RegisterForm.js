@@ -11,6 +11,7 @@ const RegisterForm = () => (
         <Input type="text" placeholder="Last Name" />
         <Input type="text" placeholder="Email" />
         <Input type="password" placeholder="Password" />
+        <Input type="password" placeholder="Password" />
         <Button>Register</Button>
       </form>
     </Control>
