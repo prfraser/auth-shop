@@ -13,7 +13,7 @@ router.get('/products', requireJWT, (req, res) => {
 	})
 });
 
-router.post('/products', requireJWT, verifyAdmin, (req, res) => {
+router.post('/products', requireJWT, (req, res) => {
 	Product.create({ 
 		brandName: req.body.brandName,
 		name: req.body.name,

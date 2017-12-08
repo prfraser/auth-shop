@@ -12,6 +12,13 @@ class App extends Component {
     register: false
   }
 
+  handleLogOut = () => {
+    this.setState({
+      loggedIn: null
+    })
+    localStorage.removeItem('token')
+  }
+
   toggleRegister = () => {
     this.setState({
       register: !this.state.register
@@ -20,7 +27,8 @@ class App extends Component {
 
   handleLoginResponse = (response) => {
     this.setState({
-      loggedIn: response.data.token
+      loggedIn: response.data.token,
+      register: false
     })
   }
 
@@ -34,12 +42,13 @@ class App extends Component {
                       </div>
     } else if (this.state.register) {
       loggedInState = <div>
-                        <RegisterForm />
+                        <RegisterForm handleLoginResponse={this.handleLoginResponse} />
                         <Button onClick={this.toggleRegister}>Log In</Button>
                       </div>
     } else {
       loggedInState = <div>
                         <Products token={this.state.loggedIn}/>
+                        <Button onClick={this.handleLogOut}>Log Out</Button>
                       </div>
     }
 
