@@ -17,7 +17,6 @@ class NewProduct extends Component {
       [event.target.name]: event.target.value
     })
   }
-  
 
   handleCreateSubmit = (event) => {
     event.preventDefault();
